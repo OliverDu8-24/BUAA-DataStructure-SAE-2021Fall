@@ -46,7 +46,7 @@ void LR(struct node **o) {lrotate(&((*o)->lson)); rrotate(o);}
 void RL(struct node **o) {rrotate(&((*o)->rson)); lrotate(o);}
 void RR(struct node **o) {lrotate(o);}
 
-struct node *_Insert(struct node *o, int key) {
+struct node *avltree_insert(struct node *o, int key) {
     if(o == NULL) {
         o = (struct node *)malloc(sizeof(struct node));
         o->lson = o->rson = NULL;
@@ -59,7 +59,7 @@ struct node *_Insert(struct node *o, int key) {
         pushup(&o);
         return o;
     } else if(key < o->val) {
-        o->lson = _Insert(o->lson, key);
+        o->lson = avltree_insert(o->lson, key);
         if(height(o->lson) - height(o->rson) == 2) {
             if(key <= o->lson->val) LL(&o);
             else LR(&o);
@@ -67,7 +67,7 @@ struct node *_Insert(struct node *o, int key) {
         pushup(&o);
         return o;
     } else {
-        o->rson = _Insert(o->rson, key);
+        o->rson = avltree_insert(o->rson, key);
         if(height(o->rson) - height(o->lson) == 2) {
             if(key >= o->rson->val) RR(&o);
             else RL(&o);
@@ -77,10 +77,10 @@ struct node *_Insert(struct node *o, int key) {
     }
 }
 
-struct node *_Delete(struct node *o, int key) {
+struct node *avltree_delete(struct node *o, int key) {
     if(o == NULL) return NULL;
     if(key < o->val) {
-        o->lson = _Delete(o->lson, key);
+        o->lson = avltree_delete(o->lson, key);
         if(height(o->rson) - height(o->lson) == 2) {
             if(height(o->rson->rson) >= height(o->rson->lson)) RR(&o);
             else RL(&o);
@@ -88,7 +88,7 @@ struct node *_Delete(struct node *o, int key) {
         pushup(&o);
         return o;
     } else if(key > o->val) {
-        o->rson = _Delete(o->rson, key);
+        o->rson = avltree_delete(o->rson, key);
         if(height(o->lson) - height(o->rson) == 2) {
             if(height(o->lson->lson) >= height(o->lson->rson)) LL(&o);
             else LR(&o);
@@ -107,7 +107,7 @@ struct node *_Delete(struct node *o, int key) {
                 while(p->rson) p = p->rson;
                 o->val = p->val; o->cnt = p->cnt;
                 p->cnt = 1;
-                o->lson = _Delete(o->lson, p->val);
+                o->lson = avltree_delete(o->lson, p->val);
                 pushup(&o);
                 return o;
             } else {
@@ -115,24 +115,27 @@ struct node *_Delete(struct node *o, int key) {
                 while(p->lson) p = p->lson;
                 o->val = p->val; o->cnt = p->cnt;
                 p->cnt = 1;
-                o->rson = _Delete(o->rson, p->val);
+                o->rson = avltree_delete(o->rson, p->val);
                 pushup(&o);
                 return o;                
             }
         } else {
+            struct node *tmp = o;
             if(o->lson) o = o->lson;
             else if(o->rson) o = o->rson;
             else o = NULL;
+            free(tmp);
             return o;
         }
     }
+    return NULL;
 }
 
-struct node *_search(struct node *o, int key) {
+struct node *avltree_search(struct node *o, int key) {
     if(o == NULL) return NULL;
     if(o->val == key) return o;
-    else if(key < o->val) return _search(o->lson, key);
-    else return _search(o->rson, key);
+    else if(key < o->val) return avltree_search(o->lson, key);
+    else return avltree_search(o->rson, key);
 }
 
 #ifdef MORE_FEATURE
@@ -190,7 +193,7 @@ struct node *_search(struct node *o, int key) {
         _PreOrderTravel(o->rson);
     }
 
-#endif
+
 
 int main() {
     int n;
@@ -238,3 +241,5 @@ int main() {
         
     }
 }
+
+#endif

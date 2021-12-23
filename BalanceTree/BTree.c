@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LOCAL_TEST
+//#define LOCAL_TEST
 
 int KEY_MAX;
 int KEY_MIN;
@@ -33,7 +33,7 @@ void _split(Node *o);
 void _merge(Node *o);
 void do_merge(Node *l, Node *r, int id);
 void insert(int key);
-void delete(int key);
+void btree_delete(int key);
 void _delete(Node *o, int id);
 
 void init(int M) {
@@ -86,7 +86,7 @@ void _split(Node *o) {
     }
 }
 
-void insert(int key) {
+void btree_insert(int key) {
     if(root == NULL) {
         Node *node = newNode();
         if(!node) return;
@@ -101,11 +101,11 @@ void insert(int key) {
     while(o) {
         for(i = 0; i < o->size; i++) {
             if(key == o->key[i]) {
-                printf("Element Existed...\n");
+                //printf("Element Existed...\n");
                 return;
             } else if(key < o->key[i]) break;
         }
-        printf("%d\n", i);
+        //printf("%d\n", i);
         if(o->child[i]) o = o->child[i];
         else break;
     }
@@ -133,6 +133,8 @@ void do_merge(Node *l, Node *r, int mid) {
     parent->key[i] = 0;
     parent->child[i+1] = NULL;
     parent->size--; 
+    free((void *)r->key);
+    free((void *)r->child);
     free(r);
 
     if(parent->size < KEY_MIN) _merge(parent);
@@ -148,6 +150,8 @@ void _merge(Node *o) {
                 root = o->child[0];
                 o->child[0]->parent = NULL;
             } else root = NULL;
+            free((void *)o->key);
+            free((void *)o->child);
             free(o);
         }
         return;
@@ -155,7 +159,7 @@ void _merge(Node *o) {
 
     for(id = 0; id <= parent->size; id++) if(parent->child[id] == o) break;
     if(id > parent->size) {
-        printf("Element Not Found!\n");
+        //printf("Element Not Found!\n");
         return;
     }
 
@@ -224,11 +228,12 @@ void _delete(Node *node, int id) {
     else for(int j = id; j < o->size; j++) o->key[j] = o->key[j+1];
     node->key[node->size-1] = 0;
     node->size--;
+
     if(node->size < KEY_MIN) _merge(node);
-    else if(node->size == 0) free(node);
+    
 }
 
-void delete(int key) {
+void btree_delete(int key) {
     Node *o = root;
     int i;
     while(o) {
@@ -241,18 +246,18 @@ void delete(int key) {
         }
         o = o->child[i];
     }
-    printf("Element Not Found!\n");
+    //printf("Element Not Found!\n");
     return;
 }
 
-Node *search(Node *o, int x) {
+Node *btree_search(Node *o, int x) {
     if(!o) return NULL;
-    if(x < o->key[0]) return search(o->child[0], x);
+    if(x < o->key[0]) return btree_search(o->child[0], x);
     for(int i = 0; i < o->size; i++) {
         if(o->key[i] == x) return o;
-        else if(o->key[i+1] > x) return search(o->child[i+1], x);
+        else if(o->key[i+1] > x) return btree_search(o->child[i+1], x);
     }
-    return search(o->child[o->size], x);
+    return btree_search(o->child[o->size], x);
 }
 
 #ifdef LOCAL_TEST
@@ -266,7 +271,7 @@ Node *search(Node *o, int x) {
         for(int i = 0; i <= o->size; i++) _PreOrderTravel(o->child[i]);
     }
 
-#endif
+
 
 int main() {
     init(3);
@@ -304,3 +309,5 @@ int main() {
         
     }
 }
+
+#endif

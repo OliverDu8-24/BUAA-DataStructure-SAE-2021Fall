@@ -6,7 +6,7 @@
 #define Black 1
 
 //#define LOCAL_TEST
-#define MORE_FEATURE
+//#define MORE_FEATURE
 
 typedef struct Node {
     struct Node *lson;
@@ -27,6 +27,7 @@ Node *get_uncle(Node *o) {
     if(o->parent == NIL || get_grandparent(o) == NIL) return NIL;
     if(o->parent == get_grandparent(o)->lson) return get_grandparent(o)->rson;
     else if(o->parent == get_grandparent(o)->rson) return get_grandparent(o)->lson;
+    return NIL;
 }
 void set_black(Node *o) {if(o) o->color = Black;}
 void set_red(Node *o) {if(o) o->color = Red;}
@@ -35,6 +36,15 @@ int _max(int a, int b) {return a>b?a:b;}
 int size(Node *o) {return o==NULL?0:o->size;}
 int cnt(Node *o) {return o==NULL?0:o->cnt;}
 void pushup(Node *o) {o->size = cnt(o) + size(o->lson) + size(o->rson);}
+
+void init() {
+    NIL = (Node *)calloc(1, sizeof(Node));
+    NIL->lson = NIL->rson = NIL->parent = NULL;
+    NIL->size = NIL->cnt = 0;
+    NIL->color = Black;
+    root = NIL;
+    //root->parent = NIL;
+}
 
 // 红黑树的旋转与AVL树的不同指出在于，旋转的节点没有变，指针仍然指向原来的位置
 // 例如本来指针指向的是父亲，旋转之后变成了儿子，指针仍然是指向原来的父亲，现在的儿子，即不需要修改形参的值
@@ -138,7 +148,7 @@ void insert_fixup(Node *o) {
     set_black(root);
 }
 
-void insert(Node *o, int key) {
+void rbtree_insert(Node *o, int key) {
     Node *i = o;
     Node *f = NIL;
     while (i != NIL) {
@@ -164,12 +174,12 @@ void insert(Node *o, int key) {
     insert_fixup(i);
 }
 
-Node *search(Node *o, int key) {
+Node *rbtree_search(Node *o, int key) {
     if(o == NIL) return NULL;
     if(o->val == key) {return o;}
     Node *ans;
-    if(key < o->val) ans = search(o->lson, key);
-    else ans = search(o->rson, key);
+    if(key < o->val) ans = rbtree_search(o->lson, key);
+    else ans = rbtree_search(o->rson, key);
     return ans;
 }
 
@@ -263,7 +273,8 @@ void delete_fixup(Node *o, Node *f) {
     if(o != NIL) o->color = Black;
 }
 
-void delete(Node *o, int key) {
+void rbtree_delete(Node *o, int key) {
+    if(o == NIL || o == NULL) return;
     Node *ch, *f;
     Node *i = o;
     int color;
@@ -277,7 +288,7 @@ void delete(Node *o, int key) {
     }
     
     if(i == NIL) {
-        while(f != NIL) f->size++, f = f->parent;
+        while(f != NIL && f != NULL) f->size++, f = f->parent;
         return;
     }
     if(i->cnt > 1) {
@@ -397,8 +408,6 @@ void delete(Node *o, int key) {
         _PreOrderTravel(o->rson);
     }
 
-#endif
-
 int main() {
 
     NIL = (Node *)calloc(1, sizeof(Node));
@@ -415,15 +424,15 @@ int main() {
         scanf("%d%d", &op, &x);
         switch(op) {
             case 0:
-                q = search(root, x);
+                q = rbtree_search(root, x);
                 if(!q) printf("Not Found!\n");
                 else printf("(%d,%d,%d,%s)\n", q->val, q->size, q->cnt, q->color == 1 ? "Black" : "Red");
                 break;
             case 1:
-                insert(root, x);
+                rbtree_insert(root, x);
                 break;
             case 2:
-                delete(root, x);
+                rbtree_delete(root, x);
                 break;
 
 #ifdef MORE_FEATURE
@@ -452,3 +461,5 @@ int main() {
         
     }
 }
+
+#endif
