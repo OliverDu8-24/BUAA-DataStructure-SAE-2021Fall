@@ -125,7 +125,7 @@ void CombinationFunctionTest() {
 }
 
 int main() {
-    //SimpleFunctionTest();
-    CombinationFunctionTest();
+    SimpleFunctionTest();
+    //CombinationFunctionTest();
     return 0;
 }

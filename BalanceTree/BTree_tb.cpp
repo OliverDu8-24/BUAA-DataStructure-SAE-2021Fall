@@ -24,7 +24,7 @@ void SimpleFunctionTest() {
     FILE *res_simpletest = fopen("./res/btree_simple.txt", "w");
     vector<int> arr;
     int i = 10;
-    for(int i = 0; i < 11; i++) {
+    for(int i = 0; i < 10; i++) {
         clock_t timer_s, timer_e;
         root = NULL;
         fprintf(res_simpletest, "%d\n", data_mass[i]);
