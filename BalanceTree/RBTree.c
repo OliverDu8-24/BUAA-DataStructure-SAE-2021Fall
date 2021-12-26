@@ -110,7 +110,7 @@ void insert_fixup(Node *o) {
             // 解决方法：父亲设为黑色，祖父设为红色，右旋一次
             set_black(f);
             set_red(g);
-            rrotate(g);
+            rrotate(g); 
         } else {    //对称的再来一遍
             // 情况1：叔叔节点也是红色
             // 解决方法：叔叔和父亲设为黑色，祖父设为红色，继续从祖父向上修正

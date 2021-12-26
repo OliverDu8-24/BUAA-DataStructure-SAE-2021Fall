@@ -115,6 +115,7 @@ void btree_insert(int key) {
     if(o->size > KEY_MAX) _split(o);
 }
 
+// 将l和r指向的两个节点合并，同时mid是父亲父亲节点中的编号
 void do_merge(Node *l, Node *r, int mid) {
     Node *parent = l->parent;
     l->key[l->size++] = parent->key[mid];
@@ -144,6 +145,8 @@ void _merge(Node *o) {
     int id, mid;
     Node *parent = o->parent;
     Node *right_bro = NULL, *left_bro = NULL;
+
+    // 如果是根节点，则直接处理
     if(!parent) {
         if(o->size == 0) {
             if(o->child[0]) {
@@ -157,22 +160,27 @@ void _merge(Node *o) {
         return;
     }
 
+    // 找到需要合并的节点在数组中的编号
     for(id = 0; id <= parent->size; id++) if(parent->child[id] == o) break;
     if(id > parent->size) {
         //printf("Element Not Found!\n");
         return;
     }
 
+    // 如果是最右边的节点，就和左边的合并（把右侧节点o合并到左侧left_bro）
     if(id == parent->size) {
         mid = id-1;
         left_bro = parent->child[mid];
         
+        // 如果可以合并就合并
         if(o->size + left_bro->size + 1 <= KEY_MAX) {
             return do_merge(left_bro, o, mid);
         }
 
+        // 否则就不合并
         if(left_bro->size == 1) return;
 
+        // 把左边的最大的那个元素拿出来当作根，根节点跟右侧合并
         for(int i = o->size; i > 0; i--) {
             o->key[i] = o->key[i-1];
             o->child[i+1] = o->child[i];
@@ -193,6 +201,7 @@ void _merge(Node *o) {
         return;
     }
 
+    // 否则就和右边的节点合并（把右侧right_bro合并到左侧o），下面同理
     mid = id;
     right_bro = parent->child[mid+1];
     if(o->size + right_bro->size + 1 <= KEY_MAX) {
